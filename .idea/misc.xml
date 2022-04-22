@@ -3,6 +3,10 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/source-code-projects/interviews/elmenus/Elmenus/app/src/main/res/layout/activity_main.xml" value="0.19907407407407407" />
+        <entry key="..\:/source-code-projects/interviews/elmenus/Elmenus/app/src/main/res/layout/fragment_home.xml" value="0.21686746987951808" />
+        <entry key="..\:/source-code-projects/interviews/elmenus/Elmenus/app/src/main/res/layout/list_item_child.xml" value="0.19907407407407407" />
+        <entry key="..\:/source-code-projects/interviews/elmenus/Elmenus/app/src/main/res/layout/list_item_tag.xml" value="0.264" />
         <entry key="..\:/source-code-projects/interviews/elmenus/app/src/main/res/layout/activity_main.xml" value="0.1" />
       </map>
     </option>
