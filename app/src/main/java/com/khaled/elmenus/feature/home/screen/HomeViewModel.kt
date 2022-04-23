@@ -46,6 +46,10 @@ class HomeViewModel(
     }
 
     fun onTagItemClicked(tagItemView: TagItemView) {
+        getFoodList(tagItemView)
+    }
+
+    private fun getFoodList(tagItemView: TagItemView) {
 
     }
 

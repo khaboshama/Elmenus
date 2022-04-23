@@ -10,4 +10,9 @@ interface RestaurantApi {
     suspend fun getTags(
         @Path("page") pageNumber: Int,
     ): Response<TagsResponse>
+
+    @GET("items/{tagName}")
+    suspend fun getFoodList(
+        @Path("tagName") tagName: String,
+    ): Response<TagsResponse>
 }
