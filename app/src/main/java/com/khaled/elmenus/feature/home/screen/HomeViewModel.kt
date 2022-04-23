@@ -1,5 +1,6 @@
 package com.khaled.elmenus.feature.home.screen
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.khaled.elmenus.common.BaseViewModel
 import com.khaled.elmenus.feature.home.module.Mapper.toTagItemView
@@ -15,19 +16,9 @@ class HomeViewModel(
 ) : BaseViewModel() {
     private var job: Job? = null
     private var pageNumber = 1
-    val baseHomeViewList = MutableLiveData<MutableList<BaseHomeItemView>?>()
-    var isTagsRequestFinished = true
-
-    fun onTagItemClicked(tagItemView: TagItemView) {
-
-    }
-
-    fun refreshTags() {
-        pageNumber = 1
-        isTagsRequestFinished = true
-        job?.cancel()
-        getTags(forceRefresh = true)
-    }
+    private val _baseHomeViewList = MutableLiveData<MutableList<BaseHomeItemView>?>()
+    val baseHomeViewList: LiveData<MutableList<BaseHomeItemView>?> = _baseHomeViewList
+    private var isTagsRequestFinished = true
 
     init {
         getTags()
@@ -38,12 +29,12 @@ class HomeViewModel(
         isTagsRequestFinished = false
         job = wrapBlockingOperation {
             handleResult(getTagsUseCase(pageNumber = pageNumber), onSuccess = { it ->
-                if (forceRefresh) baseHomeViewList.value = null
-                if (baseHomeViewList.value.isNullOrEmpty()) {
-                    baseHomeViewList.value = mutableListOf(it.data.map { it.toTagItemView() }.toTagListView())
+                if (forceRefresh) _baseHomeViewList.value = null
+                if (_baseHomeViewList.value.isNullOrEmpty()) {
+                    _baseHomeViewList.value = mutableListOf(it.data.map { it.toTagItemView() }.toTagListView())
                 } else {
-                    (baseHomeViewList.value?.get(0) as TagsListView).list.addAll(it.data.map { it.toTagItemView() })
-                    baseHomeViewList.value = baseHomeViewList.value
+                    (_baseHomeViewList.value?.get(0) as TagsListView).list.addAll(it.data.map { it.toTagItemView() })
+                    _baseHomeViewList.value = _baseHomeViewList.value
                 }
                 pageNumber++
                 isTagsRequestFinished = true
@@ -52,6 +43,17 @@ class HomeViewModel(
                 isTagsRequestFinished = true
             })
         }
+    }
+
+    fun onTagItemClicked(tagItemView: TagItemView) {
+
+    }
+
+    fun refreshTags() {
+        pageNumber = 1
+        isTagsRequestFinished = true
+        job?.cancel()
+        getTags(forceRefresh = true)
     }
 
     fun onTagReachedEnd() {
