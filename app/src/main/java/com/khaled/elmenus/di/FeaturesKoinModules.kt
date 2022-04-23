@@ -5,6 +5,7 @@ import com.khaled.elmenus.common.ApplicationContext
 import com.khaled.elmenus.common.IApplicationContext
 import com.khaled.elmenus.feature.home.module.data.HomeRepository
 import com.khaled.elmenus.feature.home.module.data.IHomeRepository
+import com.khaled.elmenus.feature.home.module.useCase.GetTagFoodListUseCase
 import com.khaled.elmenus.feature.home.module.useCase.GetTagsUseCase
 import com.khaled.elmenus.feature.home.screen.HomeViewModel
 import org.koin.android.ext.koin.androidContext
@@ -26,7 +27,8 @@ object FeaturesKoinModules {
     private fun getHomeModule() = module {
         factory<IHomeRepository> { HomeRepository() }
         factory { GetTagsUseCase(get()) }
-        viewModel { HomeViewModel(get()) }
+        factory { GetTagFoodListUseCase(get()) }
+        viewModel { HomeViewModel(get(), get()) }
     }
 
     private fun getMainModule() = module { viewModel { MainViewModel() } }

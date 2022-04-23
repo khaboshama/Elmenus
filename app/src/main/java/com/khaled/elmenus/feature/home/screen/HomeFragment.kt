@@ -17,7 +17,6 @@ class HomeFragment : BaseFragment<HomeViewModel>() {
 
     private val homeAdapter = HomeAdapter(
         onTagItemClick = { viewModel.onTagItemClicked(it) },
-        onHomeRecyclerViewReachedEnd = {},
         onTagRecyclerViewReachedEnd = { viewModel.onTagReachedEnd() }
     )
 
@@ -47,7 +46,7 @@ class HomeFragment : BaseFragment<HomeViewModel>() {
     private fun setupObserver() {
         with(viewModel) {
             baseHomeViewList.observe(viewLifecycleOwner) { list ->
-                homeAdapter.submitList(list)
+                homeAdapter.submitList(list?.toList())
             }
         }
     }

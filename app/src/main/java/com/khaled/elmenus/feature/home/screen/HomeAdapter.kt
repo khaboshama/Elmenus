@@ -9,15 +9,17 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.SCROLL_STATE_IDLE
+import com.bumptech.glide.Glide
 import com.khaled.elmenus.R
 import com.khaled.elmenus.feature.home.module.view.BaseHomeItemView
+import com.khaled.elmenus.feature.home.module.view.TagFoodItemView
 import com.khaled.elmenus.feature.home.module.view.TagItemView
 import com.khaled.elmenus.feature.home.module.view.TagsListView
 import kotlinx.android.synthetic.main.list_item_child.view.*
+import kotlinx.android.synthetic.main.list_item_tag_food.view.*
 
 class HomeAdapter(
     private val onTagItemClick: (TagItemView) -> Unit,
-    private val onHomeRecyclerViewReachedEnd: () -> Unit,
     private val onTagRecyclerViewReachedEnd: () -> Unit
 ) :
     ListAdapter<BaseHomeItemView, HomeAdapter.BaseHomeViewHolder>(diffCallback) {
@@ -32,28 +34,43 @@ class HomeAdapter(
             override fun areContentsTheSame(
                 oldItem: BaseHomeItemView,
                 newItem: BaseHomeItemView
-            ): Boolean = oldItem == newItem
-
+            ): Boolean = oldItem === newItem
         }
     }
 
     var scrollStateRecyclerViewHashMap = HashMap<Int, Int>()
     override fun onBindViewHolder(holder: BaseHomeViewHolder, position: Int) {
         holder.bind(getItem(position))
-        if (position == itemCount - 1) onHomeRecyclerViewReachedEnd()
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseHomeViewHolder {
-        return TagsViewHolder(LayoutInflater.from(parent.context).inflate(viewType, parent, false))
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = if (viewType == R.layout.list_item_child) {
+        TagsViewHolder(LayoutInflater.from(parent.context).inflate(viewType, parent, false))
+    } else {
+        TagFoodViewHolder(LayoutInflater.from(parent.context).inflate(viewType, parent, false))
     }
 
     override fun getItemViewType(position: Int): Int {
-        return if (getItem(position) == null)
-            R.layout.list_item_child_place_holder else R.layout.list_item_child
+        return when {
+            getItem(position) == null -> R.layout.list_item_child_place_holder
+            getItem(position) is TagsListView -> R.layout.list_item_child
+            else -> R.layout.list_item_tag_food
+        }
     }
 
     abstract class BaseHomeViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         abstract fun bind(item: BaseHomeItemView?)
+    }
+
+    inner class TagFoodViewHolder(itemView: View) : BaseHomeViewHolder(itemView) {
+
+        override fun bind(item: BaseHomeItemView?) {
+            (item as? TagFoodItemView)?.let { tagFoodItemView ->
+                with(itemView) {
+                    Glide.with(context).load(tagFoodItemView.photoUrl).fitCenter().into(tagFoodImageView)
+                    titleTextView.text = tagFoodItemView.name
+                }
+            }
+        }
     }
 
     inner class TagsViewHolder(itemView: View) : BaseHomeViewHolder(itemView) {
@@ -87,25 +104,25 @@ class HomeAdapter(
                     super.onScrollStateChanged(recyclerView, newState)
                     if (newState == SCROLL_STATE_IDLE) {
                         if (recyclerView.getChildAt(0) == null) return
-                        val view: View? = pagerSnapHelper.findSnapView(recyclerView.layoutManager)
+                        val view = pagerSnapHelper.findSnapView(recyclerView.layoutManager)
                         if (view != null && recyclerView.layoutManager != null) {
-                            saveScrollStateAndNotifyLastAttachmentItem(view, recyclerView)
+                            saveScrollStateAndNotifyLastItem(view, recyclerView)
                         }
                     }
                 }
             })
         }
 
-        private fun saveScrollStateAndNotifyLastAttachmentItem(
+        private fun saveScrollStateAndNotifyLastItem(
             view: View,
             recyclerView: RecyclerView
         ) {
-            val currentItemPosition: Int = recyclerView.layoutManager!!.getPosition(view)
+            val currentItemPosition = recyclerView.layoutManager?.getPosition(view)
             val lastItemPosition = scrollStateRecyclerViewHashMap[recyclerView.tag as Int]
             if (lastItemPosition != null && lastItemPosition != currentItemPosition) {
                 (recyclerView.adapter)?.notifyItemChanged(lastItemPosition)
             }
-            scrollStateRecyclerViewHashMap[recyclerView.tag as Int] = currentItemPosition
+            currentItemPosition?.let { scrollStateRecyclerViewHashMap[recyclerView.tag as Int] = currentItemPosition }
         }
 
         private fun getItemCachedPosition(adapterPosition: Int) =

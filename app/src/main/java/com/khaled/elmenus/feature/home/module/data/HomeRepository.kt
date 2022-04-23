@@ -3,6 +3,7 @@ package com.khaled.elmenus.feature.home.module.data
 import com.khaled.elmenus.common.data.AppResult
 import com.khaled.elmenus.common.data.HttpUtils
 import com.khaled.elmenus.data.remote.RetrofitClient
+import com.khaled.elmenus.feature.home.module.domain.TagFoodItem
 import com.khaled.elmenus.feature.home.module.domain.TagItem
 
 class HomeRepository : IHomeRepository {
@@ -16,6 +17,22 @@ class HomeRepository : IHomeRepository {
                 )
             }) {
             is AppResult.Success -> AppResult.Success(result.data.tagList)
+            else -> {
+                errorAppResult = result as AppResult.Error
+                getErrorAppResult(errorAppResult.errorMessage, errorAppResult.errorMessageRes)
+            }
+        }
+    }
+
+    override suspend fun getTagFoodList(tagName: String): AppResult<List<TagFoodItem>> {
+        val errorAppResult: AppResult.Error?
+        return when (val result =
+            HttpUtils.safeApiCall {
+                RetrofitClient.homeApi.getTagFoodList(
+                    tagName = tagName
+                )
+            }) {
+            is AppResult.Success -> AppResult.Success(result.data.tagFoodList)
             else -> {
                 errorAppResult = result as AppResult.Error
                 getErrorAppResult(errorAppResult.errorMessage, errorAppResult.errorMessageRes)
