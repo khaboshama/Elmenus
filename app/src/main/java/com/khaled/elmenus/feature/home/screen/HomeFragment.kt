@@ -15,6 +15,12 @@ class HomeFragment : BaseFragment<HomeViewModel>() {
     override val loadingView: View?
         get() = loadingProgressBar
 
+    private val homeAdapter = HomeAdapter(
+        onTagItemClick = { viewModel.onTagItemClicked(it) },
+        onHomeRecyclerViewReachedEnd = {},
+        onTagRecyclerViewReachedEnd = { viewModel.onTagReachedEnd() }
+    )
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -23,12 +29,26 @@ class HomeFragment : BaseFragment<HomeViewModel>() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setListeners()
+        setupTagsRecyclerView()
         setupObserver()
     }
 
+    private fun setupTagsRecyclerView() {
+        parentRecyclerView.adapter = homeAdapter
+    }
+
     private fun setListeners() {
+        tagsSwipeRefresh.setOnRefreshListener {
+            viewModel.refreshTags()
+            tagsSwipeRefresh?.isRefreshing = false
+        }
     }
 
     private fun setupObserver() {
+        with(viewModel) {
+            baseHomeViewList.observe(viewLifecycleOwner) { list ->
+                homeAdapter.submitList(list)
+            }
+        }
     }
 }

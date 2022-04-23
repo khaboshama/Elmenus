@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="tag_card_width">180dp</dimen>
+    <dimen name="tag_card_height">150dp</dimen>
+    <dimen name="tag_card_name_font_size">14sp</dimen>
+</resources>

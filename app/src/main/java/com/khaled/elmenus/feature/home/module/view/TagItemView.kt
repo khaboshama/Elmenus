@@ -1,4 +1,4 @@
-package com.khaled.elmenus.feature.home.module.domain
+package com.khaled.elmenus.feature.home.module.view
 
 data class TagItemView(
     val tagName: String,

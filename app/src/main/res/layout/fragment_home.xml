@@ -9,6 +9,7 @@
         tools:context=".MainActivity">
 
         <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/tagsSwipeRefresh"
             android:layout_width="0dp"
             android:layout_height="0dp"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -21,7 +22,8 @@
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 android:padding="4dp"
-                android:scrollbars="vertical"
+                android:scrollbars="none"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 app:layout_behavior="@string/appbar_scrolling_view_behavior"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
